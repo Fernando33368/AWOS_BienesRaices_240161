@@ -1,0 +1,33 @@
+{
+  "name": "awos_bienesraices_240161",
+  "version": "1.0.0",
+  "description": "---\r <p align=\"justify\">\r En este proyecto se pondran en ejemplo práctico la creación de API's propias así como el consumo de API´s de Terceros (Gestión de Mapas, Envío de Correos, Autentificación por Redes Sociales, Gestión de Bases de Datos, Gestión de Archivos, Seguridad, Control de Sesiónes y validaciones. En el contexto real de la compra, venta o renta de propiedades.)</p>",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fernando33368/AWOS_BienesRaices_240161.git"
+  },
+  "keywords": [
+    "MVC",
+    "Pug",
+    "Tailwind",
+    "MySQL",
+    "Sequelize"
+  ],
+  "author": "Fernando Miguel Perez",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Fernando33368/AWOS_BienesRaices_240161/issues"
+  },
+  "homepage": "https://github.com/Fernando33368/AWOS_BienesRaices_240161#readme",
+  "devDependencies": {
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14"
+  }
+}
