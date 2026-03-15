@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "---\r <p align=\"justify\">\r En este proyecto se pondran en ejemplo práctico la creación de API's propias así como el consumo de API´s de Terceros (Gestión de Mapas, Envío de Correos, Autentificación por Redes Sociales, Gestión de Bases de Datos, Gestión de Archivos, Seguridad, Control de Sesiónes y validaciones. En el contexto real de la compra, venta o renta de propiedades.)</p>",
   "main": "index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "start": "node index.js",
-    "server": "nodemon index.js"
+    "server": "nodemon index.js",
+    "css": "postcss public/css/tailwind.css -o public/css/app.css --watch"
   },
   "repository": {
     "type": "git",
@@ -21,13 +22,19 @@
   ],
   "author": "Fernando Miguel Perez",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/Fernando33368/AWOS_BienesRaices_240161/issues"
   },
   "homepage": "https://github.com/Fernando33368/AWOS_BienesRaices_240161#readme",
   "devDependencies": {
+    "autoprefixer": "^10.4.27",
     "express": "^5.2.1",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "postcss": "^8.5.8",
+    "postcss-cli": "^11.0.1",
+    "tailwindcss": "^3.4.19"
+  },
+  "dependencies": {
+    "pug": "^3.0.3"
   }
 }
