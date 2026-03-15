@@ -1,4 +1,4 @@
-import express from 'express'
+const express = require ('express');
 import usuarioRoutes from './routes/usuarioRoutes.js'
 
 // Crear la app
