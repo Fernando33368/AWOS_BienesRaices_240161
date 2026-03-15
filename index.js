@@ -1,4 +1,4 @@
-const express = require ('express');
+import express from 'express'
 import usuarioRoutes from './routes/usuarioRoutes.js'
 
 // Crear la app
@@ -12,7 +12,7 @@ app.set('views', './views')
 app.use( express.static('public'))
 
 // Routing
-app.use('/', usuarioRoutes)
+app.use('/auth', usuarioRoutes)
 
 
 
