@@ -3,6 +3,7 @@ import csrf from 'csurf'
 import cookieParser from 'cookie-parser'
 import usuarioRoutes from './routes/usuarioRoutes.js'
 import db from './config/db.js'
+import { manejar404, manejarError } from './middlewares/errores.js'
 
 // Crear la app
 const app = express()
@@ -35,7 +36,8 @@ app.use( express.static('public'))
 // Routing
 app.use('/auth', usuarioRoutes)
 
-
+app.use(manejar404)
+app.use(manejarError)
 
 
 // Definir un puerto y arrancar el proyecto

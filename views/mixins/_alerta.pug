@@ -1,0 +1,37 @@
+//- views/mixins/_alerta.pug
+//- Uso: +alerta(alerta)  donde alerta = { color, icono, mensaje, tiempo }
+
+mixin alerta(alerta)
+  if alerta
+    - const colores = { verde: '#22c55e', amarillo: '#eab308', rojo: '#ef4444' }
+    - const color = colores[alerta.color] || colores.rojo
+    - const tiempo = alerta.tiempo || 4000
+
+    .alerta(
+      style=`--alerta-color:${color}; --alerta-tiempo:${tiempo}ms`
+      role="alert"
+      aria-live="assertive"
+    )
+      .alerta__semaforo
+        span.alerta__luz.alerta__luz--verde
+        span.alerta__luz.alerta__luz--amarillo
+        span.alerta__luz.alerta__luz--rojo
+
+      .alerta__cuerpo
+        span.alerta__icono= alerta.icono
+        p.alerta__texto= alerta.mensaje
+
+      .alerta__barra
+
+    script.
+      (function() {
+        const el = document.querySelector('.alerta');
+        if (!el) return;
+        const tiempo = parseInt(el.style.getPropertyValue('--alerta-tiempo')) || 4000;
+        setTimeout(() => {
+          el.style.transition = 'opacity 0.5s, transform 0.5s';
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(-12px)';
+          setTimeout(() => el.remove(), 500);
+        }, tiempo);
+      })();

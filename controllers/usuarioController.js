@@ -2,7 +2,8 @@ import { check, validationResult } from "express-validator"
 import bcrypt from 'bcrypt'
 import Usuario from "../models/Usuario.js"
 import { generarId } from '../helpers/tokens.js'
-import { emailRegistro, emailOlvidePassword } from '../helpers/emails.js'
+import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js"
+import { crearAlerta } from '../middlewares/errores.js'
 
 const formularioLogin = (req, res) => {
     res.render('auth/login', {
@@ -25,7 +26,7 @@ const registrar = async (req, res) => {
     await check('nombre').notEmpty().withMessage('El nombre es obligatorio.').run(req)
     await check('email').isEmail().withMessage('Eso no parece un email.').run(req)
     await check('password').isLength({ min: 6 }).withMessage('El Password debe contener al menos 6 caracteres.').run(req)
-    await check('repetir_password').equals('password').withMessage('El Password no son iguales.').run(req)
+    await check('repetir_password').equals(req.body.password).withMessage('El Password no son iguales.').run(req)
 
     let resultado = validationResult(req)
 
@@ -75,7 +76,7 @@ const registrar = async (req, res) => {
         token: usuario.token
     })
 
-    // Mostrar mensaje de confirmacion 
+    // Mostrar mensaje de confirmacion  exitosa
     res.render('templates/mensaje', {
         pagina: 'Cuenta creada correctamente',
         mensaje: 'Hemos enviado un Email de confirmacion, preciona en el enlace.' 
@@ -158,18 +159,18 @@ const resetPassword = async (req, res) => {
     })
 
     // Renderizar un mensaje
-    res.render('/templates/mensaje', {
+    res.render('templates/mensaje', {
         pagina: 'Reestablece tu password',
         mensaje: 'Hemos enviado un email con las instrucciones'
     })
 
 }
 
-const comprobarToken = (req, res, next) => {
+const comprobarToken = async (req, res, next) => {
 
     const { token } = req.params;
 
-    const usuario = await.findOne({where: {token}})
+    const usuario = await Usuario.findOne({where: {token}})
     if(!usuario) {
         return res.render('auth/confirmar-cuenta', {
             pagina: 'Reestablece tu cuenta',
