@@ -1,47 +1,44 @@
 import express from 'express'
-import csrf from 'csurf'
+import csurf from 'csurf'
 import cookieParser from 'cookie-parser'
-import usuarioRoutes from './routes/usuarioRoutes.js'
-import db from './config/db.js'
-import { manejar404, manejarError } from './middlewares/errores.js'
+import usuariosRoutes from "./routes/usuariosRoutes.js"
+import propiedadesRoutes from "./routes/propiedadesRoutes.js"
+import db from './config/db.js'  
 
-// Crear la app
+// Craear la app
 const app = express()
 
 // Habilitar lectura de datos de formularios
 app.use( express.urlencoded({extended: true}) )
 
-// Habilitar cookie parser
+// Habilitar Cookies Parser
 app.use( cookieParser() )
 
-// Habilitar  CSRF
-app.use( csrf({cookie: true}) )
+// Habilitar CSURF
+app.use( csurf({cookie: true}) )
 
-// Conexion a la base de datos
+//Conexion a la base de Datos
 try {
     await db.authenticate();
-    db.sync()
-    console.log('Conexion correcta a la base de datos')
+    console.log('Conexion Correcta a la Base de Datos')
+    await db.sync(); // CREA LAS TABLAS SI NO EXISTEN
 } catch (error) {
     console.log(error)
 }
 
-// Habilitar Pug
-app.set('view engine','pug')
+// Habilitar pug
+app.set('view engine', 'pug')
 app.set('views', './views')
 
 // Carpeta publica
-app.use( express.static('public'))
+app.use(express.static('public'))
 
-// Routing
-app.use('/auth', usuarioRoutes)
-
-app.use(manejar404)
-app.use(manejarError)
-
+// Importamos sus rutas (ruteo)
+app.use("/auth", usuariosRoutes)
+app.use("/", propiedadesRoutes)
 
 // Definir un puerto y arrancar el proyecto
-const port = 3000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
-    console.log(`El servidor esta funcionando en el puerto ${port}`);
+    console.log(`El Servidor esta funcionando en el puerto ${port}`)
 });

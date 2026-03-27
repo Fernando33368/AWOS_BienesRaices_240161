@@ -1,11 +1,54 @@
 doctype html
 html(lang="es")
-    head
-        meta(charset="UTF-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title Bienes Raices | #{pagina}
-        link(rel="stylesheet", href="/css/alerta.css")
-    body.min-h-screen.bg-gray-50
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Bienes Raices - 240836 | #{pagina}
+    link(rel="stylesheet", href="/css/app.css")
 
-        main(clss="mx-auto container mt-10 px-2")
-            block contenido
+  body.min-h-screen.bg-gray-50 
+    if barra
+      include header 
+
+    main.mx-auto.container.mt-10.px-2
+
+      #alertas.space-y-3
+        if errores
+          each error in errores
+            .alerta.error.flex.items-center.gap-3.p-4.rounded-lg.shadow-md.bg-red-100.border.border-red-400.text-red-700
+              span.text-xl ⚠️
+              p.font-semibold #{error.msg}
+
+        if mensaje
+          .alerta.success.flex.items-center.gap-3.p-4.rounded-lg.shadow-md.bg-green-100.border.border-green-400.text-green-700
+            span.text-xl ✅
+            p.font-semibold #{mensaje}
+
+      block contenido
+
+    // 👇 AQUÍ VA EL SCRIPT
+    script.
+      document.addEventListener("DOMContentLoaded", () => {
+        const alertas = document.querySelectorAll(".alerta");
+
+        alertas.forEach((alerta, index) => {
+          alerta.style.opacity = "0";
+          alerta.style.transform = "translateY(-20px)";
+
+          setTimeout(() => {
+            alerta.style.transition = "all 0.5s ease";
+            alerta.style.opacity = "1";
+            alerta.style.transform = "translateY(0)";
+          }, index * 200);
+
+          setTimeout(() => {
+            alerta.style.opacity = "0";
+            alerta.style.transform = "translateX(50px)";
+            
+            setTimeout(() => {
+              alerta.remove();
+            }, 500);
+
+          }, 4000);
+        });
+      });

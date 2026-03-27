@@ -1,109 +1,133 @@
-import nodemailer from 'nodemailer'
+import nodemailer from 'nodemailer';
 
+// 🔹 Plantilla base reutilizable
+const generarTemplate = ({ titulo, mensaje, botonTexto, botonLink }) => {
+    return `
+    <div style="background:#f2f3f5; padding:40px 0; font-family: Helvetica, Arial, sans-serif;">
+      
+      <table align="center" width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:8px; overflow:hidden;">
+        
+        <!-- Header -->
+        <tr>
+          <td style="background:#111827; padding:20px; text-align:center;">
+            <h1 style="color:#ffffff; margin:0; font-size:22px;">
+              Bienes Raíces - 🏡 - 240836
+            </h1>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:30px;">
+            
+            <h2 style="color:#111827; margin-top:0;">${titulo}</h2>
+
+            <p style="color:#374151; font-size:15px; line-height:1.6;">
+              ${mensaje}
+            </p>
+
+            <!-- Botón -->
+            <div style="text-align:center; margin:30px 0;">
+              <a href="${botonLink}" 
+                 style="background:#00A650; color:#ffffff; text-decoration:none; padding:14px 28px; border-radius:6px; font-weight:bold; display:inline-block;">
+                 ${botonTexto}
+              </a>
+            </div>
+
+            <!-- Fallback -->
+            <p style="font-size:13px; color:#6b7280;">
+              Si el botón no funciona, copia y pega este enlace en tu navegador:
+            </p>
+
+            <p style="word-break:break-all; font-size:12px; color:#2563eb;">
+              ${botonLink}
+            </p>
+
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="background:#f9fafb; padding:20px; text-align:center;">
+            <p style="font-size:12px; color:#9ca3af; margin:0;">
+              Este correo fue enviado por Bienes Raíces - 240836.
+            </p>
+            <p style="font-size:12px; color:#9ca3af; margin:5px 0 0;">
+              Si no solicitaste esta acción, puedes ignorar este mensaje.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </div>
+    `;
+};
+
+
+// 🔐 Confirmar cuenta
 const emailRegistro = async (datos) => {
     const transport = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
         auth: {
             user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
+            pass: process.env.EMAIL_PASSWORD
         }
     });
 
-    const html = wrapper(`
-        ${baseHeader('🏠', 'Registro')}
-        <tr><td style="background:#c9a84c;height:4px;"></td></tr>
+    const { nombre, email, token } = datos;
 
-        <tr>
-          <td style="background:linear-gradient(135deg,#f7f3e8,#fffdf5);padding:32px 48px;text-align:center;border-bottom:1px solid #e9dfc8;">
-            <p style="margin:0 0 6px;color:#c9a84c;font-size:12px;letter-spacing:4px;text-transform:uppercase;">¡Registro exitoso!</p>
-            <h2 style="margin:0;color:#1a3c5e;font-size:26px;font-weight:normal;">
-              Bienvenido, <strong>${nombre}</strong>
-            </h2>
-          </td>
-        </tr>
+    const link = `${process.env.BASE_URL}:${process.env.PORT ?? 3000}/auth/confirmar/${token}`;
 
-        <tr>
-          <td style="background:#ffffff;padding:40px 48px 36px;">
-            <p style="margin:0 0 24px;color:#4a5568;font-size:15px;line-height:1.8;">
-              Tu cuenta ha sido creada exitosamente en <strong>Bienes Raíces</strong>.
-            </p>
+    const html = generarTemplate({
+        titulo: `Confirma tu cuenta`,
+        mensaje: `Hola <strong>${nombre}</strong>, gracias por registrarte en Bienes Raíces. Para comenzar, confirma tu cuenta haciendo clic en el botón.`,
+        botonTexto: 'Confirmar Cuenta',
+        botonLink: link
+    });
 
-            <div style="border:1px solid #e2e8f0;border-radius:6px;padding:16px 20px;margin-bottom:32px;background:#f7fafc;">
-              <p style="margin:0 0 10px;color:#1a3c5e;font-size:13px;font-weight:bold;">
-                Datos de tu cuenta
-              </p>
-              <p>Nombre: ${nombre}</p>
-              <p>Correo: ${email}</p>
-            </div>
-
-            <table width="100%">
-              <tr>
-                <td align="center">
-                  <a href="${url}" style="display:inline-block;background:#1a3c5e;color:#fff;padding:16px 40px;border-radius:6px;text-decoration:none;">
-                    Confirmar mi cuenta
-                  </a>
-                </td>
-              </tr>
-            </table>
-
-            <p style="margin-top:20px;">
-              Si no funciona: <a href="${url}">${url}</a>
-            </p>
-          </td>
-        </tr>
-
-        ${baseFooter()}
-    `);
-    
-    const { email, nombre, token } = datos
-
-    //Enviar el email
     await transport.sendMail({
-        from: 'BienesRaices.com',
+        from: 'Bienes Raices - 240836',
         to: email,
-        subject: 'Confirma tu cuenta en BienesRaices.com',
-        html: `
-            <p>Hola ${nombre}, comprueba tu cuenta en bienesraices.com</p>
+        subject: 'Confirma tu cuenta en Bienes Raices',
+        text: 'Confirma tu cuenta en Bienes Raices',
+        html
+    });
+};
 
-            <p>Tu cuenta ya esta lista, solo debes confirmarla en el siguiente enlace:
-            <a href="${process.env.BACKEND_URL}:${process.env.PORT ?? 3000}/auth/confirmar/${token}">Confirmar Cuenta</a></p>
 
-            <p>Si yu no creaste esta cuenta, puedes ignorar el mensaje</p>
-        `
-    })
-}
-
+// 🔑 Recuperar contraseña
 const emailOlvidePassword = async (datos) => {
     const transport = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
         auth: {
             user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
+            pass: process.env.EMAIL_PASSWORD
         }
     });
 
-    const { email, nombre, token } = datos
+    const { nombre, email, token } = datos;
 
-    //Enviar el email
+    const link = `${process.env.BASE_URL}:${process.env.PORT ?? 3000}/auth/recuperacion-password/${token}`;
+
+    const html = generarTemplate({
+        titulo: `Restablecer contraseña`,
+        mensaje: `Hola <strong>${nombre}</strong>, recibimos una solicitud para restablecer tu contraseña. Haz clic en el botón para continuar.`,
+        botonTexto: 'Restablecer Contraseña',
+        botonLink: link
+    });
+
     await transport.sendMail({
-        from: 'BienesRaices.com',
+        from: 'Bienes Raices - 240836',
         to: email,
-        subject: 'Reestablece tu Password en BienesRaices.com',
-        text: 'Reestablece tu Password en BienesRaices.com',
-        html: `
-            <p>Hola ${nombre}, has solicitado reestablecer tu password en bienesraices.com</p>
-
-            <p>Sigue el siguiente enlace para generar un password nuevo:
-            <a href="${process.env.BACKEND_URL}:${process.env.PORT ?? 3000}/auth/olvide-password/${token}">Reestablecer Password </a></p>
-
-            <p>Si tu no solicitaste el cambio de password, puedes ignorar el mensaje</p>
-        `
-    })
-}
+        subject: 'Reestablece tu contraseña en Bienes Raices',
+        text: 'Reestablece tu contraseña en Bienes Raices',
+        html
+    });
+};
 
 export {
     emailRegistro,
     emailOlvidePassword
-}
+};
