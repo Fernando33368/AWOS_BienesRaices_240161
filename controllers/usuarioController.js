@@ -105,20 +105,16 @@ const formularioRegistro = (req, res) =>{
 }
 
 const registrar = async (req, res) =>{
-
-    await check('nombre').notEmpty().withMessage('El nombre no puede ir vacio').run(req)
-    await check('email').isEmail().withMessage('Verifica tu email').run(req)
-    await check('password').isLength({ min: 6 }).withMessage('La contraseña debe cumplir los requisitos').run(req)
-    await check('repetir_password').custom((value, { req }) => {
-        if (value !== req.body.password) {
-            throw new Error('Las contraseñas no son iguales');
-        }
-        return true;
-    }).run(req)
+    // Validacion
+    await check('nombre').notEmpty().withMessage('⚠️ El nombre es obligatorio').run(req)
+    await check('email').isEmail().withMessage('⚠️ Verifica tu email').run(req)
+    await check('password').isLength({ min: 6 }).withMessage('⚠️ La contraseña debe tener almenos 6 caracteres').run(req)
+    await check('repetir_password').equals(req.body.password).withMessage('⚠️ La contaseña no coincide').run(req)
 
     let resultado = validationResult(req)
 
     if (!resultado.isEmpty()) {
+        // ERRORES
         return res.render('auth/registro',{
             pagina: 'Crear Cuenta',
             csrfToken: req.csrfToken(),
@@ -145,7 +141,6 @@ const registrar = async (req, res) =>{
         })
     }
  
-    
     const usuario = await Usuario.create({
         nombre,
         email,
@@ -171,13 +166,12 @@ const confirmar = async (req, res) => {
 
     const { token } = req.params;
 
-
     const usuario = await Usuario.findOne({ where: {token}})
 
     if(!usuario) {
         return res.render('auth/confirmar-cuenta', {
             pagina: 'Error al Confirmar tu Cuenta',
-            mensaje: 'Hubo un error al confirmar tu cuenta, intente de nuevo',
+            mensaje: 'Hubo un error al confirmar tu cuenta, intenta de nuevo',
             error: true
         })
     }
@@ -191,7 +185,7 @@ const confirmar = async (req, res) => {
         pagina: 'Cuenta Confirmada',
         mensaje: 'La cuenta se confirmo Correctamente'
     })
-
+    
 }
 
 const formularioRecuperarPassword = (req, res) =>{
@@ -214,7 +208,6 @@ const resetPassword = async (req, res) => {
             errores: resultado.array()
         })
     }
-
 
 
     const { email } = req.body
@@ -264,8 +257,8 @@ const comprobarToken = async (req, res) => {
    // ❌ TOKEN INVALIDO
     if(!usuario){
         return res.render('auth/confirmar-cuenta', {
-            pagina: 'Error al validar token',
-            mensaje: 'El enlace es inválido o ha expirado',
+            pagina: 'Reestablece tu contraseña',
+            mensaje: 'Hubo un error al validar tu información, intenta de nuevo',
             error: true
         })
     }

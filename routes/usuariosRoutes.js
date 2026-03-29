@@ -5,7 +5,7 @@ import { formularioLogin, autenticar ,formularioRegistro, registrar, confirmar, 
 const router = express.Router();
 
 router.get("/login", formularioLogin)
-router.post("/login", autenticar)
+// router.post("/login", autenticar)
 
 router.get("/registro", formularioRegistro)
 router.post("/registro", registrar)

@@ -71,7 +71,7 @@ const emailRegistro = async (datos) => {
         port: process.env.EMAIL_PORT,
         auth: {
             user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD
+            pass: process.env.EMAIL_PASS
         }
     });
 
@@ -91,7 +91,14 @@ const emailRegistro = async (datos) => {
         to: email,
         subject: 'Confirma tu cuenta en Bienes Raices',
         text: 'Confirma tu cuenta en Bienes Raices',
-        html
+        html: `
+          <p>Hola ${nombre}, has solicitado reestablecer tu contaseña en bienesraices.com</p>
+
+          <p>Sigue el siguiente enlace para quenerar tu nueva contraseña:
+          <a href="${process.env.BACKEND_URL}:${process.env.PORT ?? 3000}/auth/confirmar/${token}">Confirmar Cuenta</a></p>
+
+          <p>Si tu no solicitaste el cambio de contraseña, puedes ignorar el mensaje</p>
+        `
     });
 };
 
